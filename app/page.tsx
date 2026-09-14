@@ -17,6 +17,7 @@ import HeroProductCard from '@/components/site/hero-product-card'
 import ProductDialogProvider from '@/components/site/product-dialog-context'
 import StatsSection from '@/components/site/stats-section'
 import StoryCollage from '@/components/site/story-collage'
+import PointsOfSale from '@/components/site/points-of-sale'
 
 const foundingYear = 2021
 
@@ -106,6 +107,8 @@ export default async function Page() {
           <ProductGallery products={products} whatsappNumber={content.whatsappNumber} />
         </div>
       </section>
+
+      <PointsOfSale />
 
       <section className="benefits-section section"><div className="container benefits-grid"><div className="benefits-copy"><div className="eyebrow"><span className="eyebrow-line" /> Votre tranquillité d’esprit</div><h2>Du bon,<br /><em>sans compromis.</em></h2><p>Parce que bien manger commence par savoir ce que l’on met dans son assiette.</p><div className="benefits-list"><div><PackageCheck size={21} /><span><strong>Des matières premières choisies</strong><small>Auprès de producteurs passionnés et engagés.</small></span></div><div><ShieldCheck size={21} /><span><strong>Une transformation maîtrisée</strong><small>Dans le respect des bonnes pratiques d’hygiène.</small></span></div><div><Truck size={21} /><span><strong>Un service qui vous ressemble</strong><small>Commande simple, conseil humain et livraison fiable.</small></span></div></div></div><div className="benefits-image"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1100&q=85" alt="Légumes frais et panier de produits naturels" /><div className="image-caption"><span className="caption-mark">“</span><p>La qualité n’est pas un détail.<br /><strong>C’est notre point de départ.</strong></p></div></div></div></section>
 
