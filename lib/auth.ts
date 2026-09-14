@@ -13,9 +13,10 @@ function getSecret() {
 
 export async function verifyCredentials(email: string, password: string) {
   const adminEmail = process.env.ADMIN_EMAIL
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
-  if (!adminEmail || !adminPasswordHash) throw new Error('Admin credentials are not configured')
+  const adminPasswordHashBase64 = process.env.ADMIN_PASSWORD_HASH_BASE64
+  if (!adminEmail || !adminPasswordHashBase64) throw new Error('Admin credentials are not configured')
   if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) return false
+  const adminPasswordHash = Buffer.from(adminPasswordHashBase64, 'base64').toString('utf8')
   return bcrypt.compare(password, adminPasswordHash)
 }
 

@@ -7,5 +7,7 @@ if (!password) {
 }
 
 bcrypt.hash(password, 10).then((hash) => {
-  console.log(hash)
+  // Base64-encoded so the "$" characters in a bcrypt hash never get mistaken
+  // for shell/dotenv variable interpolation when stored as an env var.
+  console.log(Buffer.from(hash, 'utf8').toString('base64'))
 })
