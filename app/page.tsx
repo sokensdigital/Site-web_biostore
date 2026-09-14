@@ -10,7 +10,8 @@ import {
   Star,
   Truck,
 } from 'lucide-react'
-import { prisma } from '@/lib/db'
+import { prisma, withRetry } from '@/lib/db'
+import { formatPhoneNumber } from '@/lib/utils'
 import MobileNav from '@/components/site/mobile-nav'
 import ProductGallery from '@/components/site/product-gallery'
 
@@ -29,12 +30,15 @@ const testimonials = [
 export const dynamic = 'force-dynamic'
 
 export default async function Page() {
-  const [content, products] = await Promise.all([
-    prisma.siteContent.findUniqueOrThrow({ where: { id: 1 } }),
-    prisma.product.findMany({ orderBy: { position: 'asc' } }),
-  ])
+  const [content, products] = await withRetry(() =>
+    Promise.all([
+      prisma.siteContent.findUniqueOrThrow({ where: { id: 1 } }),
+      prisma.product.findMany({ orderBy: { position: 'asc' } }),
+    ])
+  )
 
   const whatsappLink = (message: string) => `https://wa.me/${content.whatsappNumber}?text=${encodeURIComponent(message)}`
+  const formattedWhatsappNumber = formatPhoneNumber(content.whatsappNumber)
   const featuredProduct = products[1] ?? products[0]
 
   return (
@@ -105,7 +109,7 @@ export default async function Page() {
 
       <section className="final-cta" id="contact"><div className="container final-cta-inner"><div><div className="eyebrow light"><span className="eyebrow-line" /> Parlons de vos envies</div><h2>{content.ctaTitle}</h2><p>Une question, une commande ou simplement envie d’échanger ? Notre équipe vous répond avec plaisir.</p></div><a className="button button-light button-large" href={whatsappLink('Bonjour Biostore, je souhaite échanger avec vous.')} target="_blank" rel="noreferrer"><MessageCircle size={19} /> Écrire sur WhatsApp</a></div></section>
 
-      <footer className="site-footer"><div className="container footer-grid"><div><a href="#accueil" className="brand footer-brand"><span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span><span>bio<span>store</span></span></a><p>Le naturel, avec intention.<br />Des produits vrais, pour une vie plus saine.</p></div><div><h3>Explorer</h3><a href="#produits">Nos produits</a><a href="#histoire">Notre histoire</a><a href="#contact">Nous contacter</a></div><div><h3>Nous trouver</h3><p>Douala, Cameroun</p><p>Lun – Sam · 8h – 18h</p><a className="footer-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite vous contacter.')} target="_blank" rel="noreferrer"><MessageCircle size={15} /> +{content.whatsappNumber}</a></div></div><div className="container footer-bottom"><span>© 2024 Biostore. Tous droits réservés.</span><span>Fait avec soin au Cameroun</span></div></footer>
+      <footer className="site-footer"><div className="container footer-grid"><div><a href="#accueil" className="brand footer-brand"><span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span><span>bio<span>store</span></span></a><p>Le naturel, avec intention.<br />Des produits vrais, pour une vie plus saine.</p></div><div><h3>Explorer</h3><a href="#produits">Nos produits</a><a href="#histoire">Notre histoire</a><a href="#contact">Nous contacter</a></div><div><h3>Nous trouver</h3><p>Douala, Cameroun</p><p>Lun – Sam · 8h – 18h</p><a className="footer-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite vous contacter.')} target="_blank" rel="noreferrer"><MessageCircle size={15} /> {formattedWhatsappNumber}</a></div></div><div className="container footer-bottom"><span>© 2024 Biostore. Tous droits réservés.</span><span>Fait avec soin au Cameroun</span></div></footer>
 
       <a className="floating-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite passer une commande.')} target="_blank" rel="noreferrer" aria-label="Contacter Biostore sur WhatsApp"><MessageCircle size={25} /></a>
     </main>
