@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   Leaf,
   MessageCircle,
   PackageCheck,
@@ -17,6 +16,7 @@ import ProductGallery from '@/components/site/product-gallery'
 import HeroProductCard from '@/components/site/hero-product-card'
 import ProductDialogProvider from '@/components/site/product-dialog-context'
 import StatsSection from '@/components/site/stats-section'
+import StoryCollage from '@/components/site/story-collage'
 
 const foundingYear = 2021
 
@@ -27,9 +27,9 @@ const values = [
 ]
 
 const testimonials = [
-  { quote: 'Le miel est exceptionnel, on sent vraiment la différence avec les produits industriels.', name: 'Aïcha M.', place: 'Douala' },
-  { quote: 'J’ai découvert Biostore par une amie et depuis, l’huile de coco ne quitte plus ma cuisine.', name: 'Nadine T.', place: 'Yaoundé' },
-  { quote: 'Un service chaleureux, des produits propres et une livraison toujours ponctuelle.', name: 'Franck E.', place: 'Bafoussam' },
+  { quote: 'Le miel est exceptionnel, on sent vraiment la différence avec les produits industriels.', name: 'Aïcha M.', place: 'Libreville' },
+  { quote: 'J’ai découvert Biostore par une amie et depuis, l’huile de coco ne quitte plus ma cuisine.', name: 'Nadine T.', place: 'Port-Gentil' },
+  { quote: 'Un service chaleureux, des produits propres et une livraison toujours ponctuelle.', name: 'Franck E.', place: 'Franceville' },
 ]
 
 export const dynamic = 'force-dynamic'
@@ -84,14 +84,13 @@ export default async function Page() {
             <div className="hero-stamp"><span>100%</span><small>naturel</small></div>
           </div>
         </div>
-        <a className="scroll-cue" href="#histoire"><ChevronDown size={18} /> Faire défiler</a>
       </section>
 
-      <StatsSection stats={stats} locationLabel="Douala, Cameroun" />
+      <StatsSection stats={stats} locationLabel="Libreville, Gabon" />
 
       <section className="story-section section" id="histoire">
         <div className="container story-grid">
-          <div className="story-collage"><div className="story-main-image"><img src="https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1000&q=85" alt="Récolte de feuilles fraîches" /></div><div className="story-small-image"><img src="https://images.unsplash.com/photo-1516211697506-8360dbcfe9a4?auto=format&fit=crop&w=700&q=85" alt="Mains tenant une jeune plante" /></div><div className="story-badge"><Leaf size={18} /><span>Depuis<br /><strong>2021</strong></span></div></div>
+          <StoryCollage foundingYear={foundingYear} />
           <div className="story-copy"><div className="eyebrow"><span className="eyebrow-line" /> Notre histoire</div><h2>{content.storyTitle}</h2><p>{content.storyText}</p><a className="text-link" href="#contact">Découvrir notre démarche <ArrowRight size={16} /></a></div>
         </div>
       </section>
@@ -114,7 +113,7 @@ export default async function Page() {
 
       <section className="final-cta" id="contact"><div className="container final-cta-inner"><div><div className="eyebrow light"><span className="eyebrow-line" /> Parlons de vos envies</div><h2>{content.ctaTitle}</h2><p>Une question, une commande ou simplement envie d’échanger ? Notre équipe vous répond avec plaisir.</p></div><a className="button button-light button-large" href={whatsappLink('Bonjour Biostore, je souhaite échanger avec vous.')} target="_blank" rel="noreferrer"><MessageCircle size={19} /> Écrire sur WhatsApp</a></div></section>
 
-      <footer className="site-footer"><div className="container footer-grid"><div><a href="#accueil" className="brand footer-brand"><span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span><span>bio<span>store</span></span></a><p>Le naturel, avec intention.<br />Des produits vrais, pour une vie plus saine.</p></div><div><h3>Explorer</h3><a href="#produits">Nos produits</a><a href="#histoire">Notre histoire</a><a href="#contact">Nous contacter</a></div><div><h3>Nous trouver</h3><p>Douala, Cameroun</p><p>Lun – Sam · 8h – 18h</p><a className="footer-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite vous contacter.')} target="_blank" rel="noreferrer"><MessageCircle size={15} /> {formattedWhatsappNumber}</a></div></div><div className="container footer-bottom"><span>© 2024 Biostore. Tous droits réservés.</span><span>Fait avec soin au Cameroun</span></div></footer>
+      <footer className="site-footer"><div className="container footer-grid"><div><a href="#accueil" className="brand footer-brand"><span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span><span>bio<span>store</span></span></a><p>Le naturel, avec intention.<br />Des produits vrais, pour une vie plus saine.</p></div><div><h3>Explorer</h3><a href="#produits">Nos produits</a><a href="#histoire">Notre histoire</a><a href="#contact">Nous contacter</a></div><div><h3>Nous trouver</h3><p>Libreville, Gabon</p><p>Lun – Sam · 8h – 18h</p><a className="footer-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite vous contacter.')} target="_blank" rel="noreferrer"><MessageCircle size={15} /> {formattedWhatsappNumber}</a></div></div><div className="container footer-bottom"><span>© 2024 Biostore. Tous droits réservés.</span><span>Fait avec soin au Gabon</span></div></footer>
 
       <a className="floating-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite passer une commande.')} target="_blank" rel="noreferrer" aria-label="Contacter Biostore sur WhatsApp"><MessageCircle size={25} /></a>
     </ProductDialogProvider>

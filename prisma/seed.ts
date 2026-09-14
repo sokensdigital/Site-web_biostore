@@ -21,7 +21,7 @@ async function main() {
         'Biostore est né d’une conviction simple : les meilleurs produits sont ceux qui respectent à la fois la nature, ceux qui la cultivent et ceux qui les consomment.',
       productsTitle: 'Nos essentiels du quotidien.',
       ctaTitle: 'Prêt à goûter la différence ?',
-      whatsappNumber: '237690000000',
+      whatsappNumber: '24177000000',
     },
   })
 
