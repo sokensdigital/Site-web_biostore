@@ -26,7 +26,7 @@ const testimonials = [
   { quote: 'Un service chaleureux, des produits propres et une livraison toujours ponctuelle.', name: 'Franck E.', place: 'Bafoussam' },
 ]
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function Page() {
   const [content, products] = await Promise.all([
