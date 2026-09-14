@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Menu, MessageCircle, X } from 'lucide-react'
 
-export default function MobileNav({ whatsappLink }: { whatsappLink: (message: string) => string }) {
+export default function MobileNav({ whatsappNumber }: { whatsappNumber: string }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const whatsappLink = (message: string) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
 
   return (
     <>

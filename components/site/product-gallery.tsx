@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { MessageCircle, Plus, X } from 'lucide-react'
 import type { Product } from '@/lib/content'
 
-export default function ProductGallery({ products, whatsappLink }: { products: Product[]; whatsappLink: (message: string) => string }) {
+export default function ProductGallery({ products, whatsappNumber }: { products: Product[]; whatsappNumber: string }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const whatsappLink = (message: string) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
 
   return (
     <>

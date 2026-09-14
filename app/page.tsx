@@ -45,7 +45,7 @@ export default async function Page() {
             <span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span>
             <span>bio<span>store</span></span>
           </a>
-          <MobileNav whatsappLink={whatsappLink} />
+          <MobileNav whatsappNumber={content.whatsappNumber} />
         </div>
       </header>
 
@@ -95,7 +95,7 @@ export default async function Page() {
             <div><div className="eyebrow"><span className="eyebrow-line" /> La sélection Biostore</div><h2>{content.productsTitle}</h2></div>
             <p>Des produits authentiques, préparés en petites quantités et pensés pour s’intégrer naturellement dans votre quotidien.</p>
           </div>
-          <ProductGallery products={products} whatsappLink={whatsappLink} />
+          <ProductGallery products={products} whatsappNumber={content.whatsappNumber} />
         </div>
       </section>
 
