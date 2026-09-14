@@ -16,6 +16,9 @@ import MobileNav from '@/components/site/mobile-nav'
 import ProductGallery from '@/components/site/product-gallery'
 import HeroProductCard from '@/components/site/hero-product-card'
 import ProductDialogProvider from '@/components/site/product-dialog-context'
+import StatsSection from '@/components/site/stats-section'
+
+const foundingYear = 2021
 
 const values = [
   { icon: Leaf, title: 'Naturel par choix', text: 'Des ingrédients bruts, sélectionnés avec exigence et sans superflu.' },
@@ -42,6 +45,11 @@ export default async function Page() {
   const whatsappLink = (message: string) => `https://wa.me/${content.whatsappNumber}?text=${encodeURIComponent(message)}`
   const formattedWhatsappNumber = formatPhoneNumber(content.whatsappNumber)
   const featuredProduct = products[1] ?? products[0]
+  const stats = [
+    { value: new Date().getFullYear() - foundingYear, suffix: '+', label: 'Années d’expérience' },
+    { value: products.length, suffix: '', label: products.length > 1 ? 'Produits artisanaux' : 'Produit artisanal' },
+    { value: 100, suffix: '%', label: 'Naturel' },
+  ]
 
   return (
     <main className="site-shell">
@@ -79,7 +87,7 @@ export default async function Page() {
         <a className="scroll-cue" href="#histoire"><ChevronDown size={18} /> Faire défiler</a>
       </section>
 
-      <section className="trust-strip"><div className="container trust-items"><span>Du champ à votre table</span><span className="trust-dot" /><span>Qualité locale</span><span className="trust-dot" /><span>Conseil personnalisé</span><span className="trust-dot" /><span>Livraison disponible</span></div></section>
+      <StatsSection stats={stats} locationLabel="Douala, Cameroun" />
 
       <section className="story-section section" id="histoire">
         <div className="container story-grid">
