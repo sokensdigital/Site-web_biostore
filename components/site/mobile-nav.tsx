@@ -19,7 +19,7 @@ export default function MobileNav({ whatsappNumber }: { whatsappNumber: string }
         <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
       </nav>
       <a className="button button-primary nav-cta" href={whatsappLink('Bonjour Biostore, je souhaite avoir des informations sur vos produits.')} target="_blank" rel="noreferrer">
-        <MessageCircle size={17} /> Commander sur WhatsApp
+        <MessageCircle size={17} /> Se faire livrer
       </a>
     </>
   )

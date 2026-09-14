@@ -14,6 +14,8 @@ import { prisma, withRetry } from '@/lib/db'
 import { formatPhoneNumber } from '@/lib/utils'
 import MobileNav from '@/components/site/mobile-nav'
 import ProductGallery from '@/components/site/product-gallery'
+import HeroProductCard from '@/components/site/hero-product-card'
+import ProductDialogProvider from '@/components/site/product-dialog-context'
 
 const values = [
   { icon: Leaf, title: 'Naturel par choix', text: 'Des ingrédients bruts, sélectionnés avec exigence et sans superflu.' },
@@ -43,6 +45,7 @@ export default async function Page() {
 
   return (
     <main className="site-shell">
+    <ProductDialogProvider whatsappNumber={content.whatsappNumber}>
       <header className="site-header">
         <div className="container nav-wrap">
           <a href="#accueil" className="brand" aria-label="Biostore, accueil">
@@ -69,13 +72,7 @@ export default async function Page() {
             <div className="hero-image-wrap">
               <img src={content.heroImage} alt="Plantes vertes et produits naturels Biostore" />
             </div>
-            {featuredProduct && (
-              <div className="hero-product-card">
-                <div className="mini-product-image"><img src={featuredProduct.image} alt={featuredProduct.name} /></div>
-                <div><span className="small-label">Le favori du moment</span><strong>{featuredProduct.name}</strong><span className="price">{featuredProduct.price}</span></div>
-                <a href={whatsappLink(`Bonjour Biostore, je souhaite commander le ${featuredProduct.name}.`)} target="_blank" rel="noreferrer" aria-label={`Commander ${featuredProduct.name}`}><ArrowRight size={18} /></a>
-              </div>
-            )}
+            {featuredProduct && <HeroProductCard product={featuredProduct} />}
             <div className="hero-stamp"><span>100%</span><small>naturel</small></div>
           </div>
         </div>
@@ -112,6 +109,7 @@ export default async function Page() {
       <footer className="site-footer"><div className="container footer-grid"><div><a href="#accueil" className="brand footer-brand"><span className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></span><span>bio<span>store</span></span></a><p>Le naturel, avec intention.<br />Des produits vrais, pour une vie plus saine.</p></div><div><h3>Explorer</h3><a href="#produits">Nos produits</a><a href="#histoire">Notre histoire</a><a href="#contact">Nous contacter</a></div><div><h3>Nous trouver</h3><p>Douala, Cameroun</p><p>Lun – Sam · 8h – 18h</p><a className="footer-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite vous contacter.')} target="_blank" rel="noreferrer"><MessageCircle size={15} /> {formattedWhatsappNumber}</a></div></div><div className="container footer-bottom"><span>© 2024 Biostore. Tous droits réservés.</span><span>Fait avec soin au Cameroun</span></div></footer>
 
       <a className="floating-whatsapp" href={whatsappLink('Bonjour Biostore, je souhaite passer une commande.')} target="_blank" rel="noreferrer" aria-label="Contacter Biostore sur WhatsApp"><MessageCircle size={25} /></a>
+    </ProductDialogProvider>
     </main>
   )
 }

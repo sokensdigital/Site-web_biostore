@@ -154,7 +154,7 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
                 <div className="mini-nav">
                   <span className="mini-brand"><Leaf size={13} /> bio<span>store</span></span>
                   <span>Accueil　 Nos produits　 Notre histoire　 Contact</span>
-                  <b>Commander sur WhatsApp</b>
+                  <b>Se faire livrer</b>
                 </div>
                 <div className="mini-hero editable" onClick={() => setSelected({ id: 'heroTitle', label: 'Titre principal', type: 'text' })}>
                   <div>
