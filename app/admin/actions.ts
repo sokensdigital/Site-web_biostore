@@ -33,6 +33,7 @@ const contentFields = [
   'heroImage',
   'storyTitle',
   'storyText',
+  'storyImage',
   'productsTitle',
   'ctaTitle',
   'whatsappNumber',

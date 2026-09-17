@@ -3,7 +3,7 @@
 import { motion } from 'motion/react'
 import { Leaf } from 'lucide-react'
 
-export default function StoryCollage({ foundingYear }: { foundingYear: number }) {
+export default function StoryCollage({ foundingYear, image }: { foundingYear: number; image: string }) {
   return (
     <div className="story-collage">
       <motion.div
@@ -14,7 +14,7 @@ export default function StoryCollage({ foundingYear }: { foundingYear: number })
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <img src="https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1000&q=85" alt="Récolte de feuilles fraîches" />
+        <img src={image} alt="Récolte de feuilles fraîches" />
       </motion.div>
       <motion.div
         className="story-small-image"

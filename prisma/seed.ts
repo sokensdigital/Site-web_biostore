@@ -19,6 +19,7 @@ async function main() {
       storyTitle: 'Faire mieux, naturellement.',
       storyText:
         'Biostore est né d’une conviction simple : les meilleurs produits sont ceux qui respectent à la fois la nature, ceux qui la cultivent et ceux qui les consomment.',
+      storyImage: 'https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1000&q=85',
       productsTitle: 'Nos essentiels du quotidien.',
       ctaTitle: 'Prêt à goûter la différence ?',
       whatsappNumber: '24177000000',

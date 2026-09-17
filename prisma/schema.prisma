@@ -16,6 +16,7 @@ model SiteContent {
   heroImage      String
   storyTitle     String
   storyText      String
+  storyImage     String @default("https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=1000&q=85")
   productsTitle  String
   ctaTitle       String
   whatsappNumber String

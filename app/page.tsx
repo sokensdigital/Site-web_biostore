@@ -86,7 +86,7 @@ export default async function Page() {
 
       <section className="story-section section" id="histoire">
         <div className="container story-grid">
-          <StoryCollage foundingYear={foundingYear} />
+          <StoryCollage foundingYear={foundingYear} image={content.storyImage} />
           <div className="story-copy"><div className="eyebrow"><span className="eyebrow-line" /> Notre histoire</div><h2>{content.storyTitle}</h2><p>{content.storyText}</p><Link className="text-link" href="/a-propos">Découvrir notre démarche <ArrowRight size={16} /></Link></div>
         </div>
       </section>

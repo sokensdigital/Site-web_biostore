@@ -52,7 +52,7 @@ type TextFieldId =
   | 'commitment2Text'
   | 'commitment3Title'
   | 'commitment3Text'
-type ImageFieldId = 'founderPhoto' | 'missionImage'
+type ImageFieldId = 'heroImage' | 'storyImage' | 'founderPhoto' | 'missionImage'
 type Selection = { id: string; label: string; type: 'text' | 'product' | 'outlet' | 'image' }
 
 const productFieldLabels: Record<keyof Omit<Product, 'id' | 'position' | 'createdAt' | 'updatedAt'>, string> = {
@@ -137,8 +137,10 @@ export default function AdminEditor({
       await updateContent({
         heroTitle: content.heroTitle,
         heroText: content.heroText,
+        heroImage: content.heroImage,
         storyTitle: content.storyTitle,
         storyText: content.storyText,
+        storyImage: content.storyImage,
         productsTitle: content.productsTitle,
         ctaTitle: content.ctaTitle,
         whatsappNumber: content.whatsappNumber,
@@ -258,11 +260,19 @@ export default function AdminEditor({
                     <p>{preview.heroText}</p>
                     <button>Découvrir nos produits　→</button>
                   </div>
-                  <img src={preview.heroImage} alt="Aperçu hero" />
+                  <img
+                    src={preview.heroImage}
+                    alt="Aperçu hero"
+                    onClick={(e) => { e.stopPropagation(); setSelected({ id: 'heroImage', label: 'Image du hero', type: 'image' }) }}
+                  />
                 </div>
                 <div className="mini-strip">DU CHAMP À VOTRE TABLE　 •　 QUALITÉ LOCALE　 •　 LIVRAISON DISPONIBLE</div>
                 <div className="mini-story editable" onClick={() => setSelected({ id: 'storyTitle', label: 'Titre histoire', type: 'text' })}>
-                  <img src="https://images.unsplash.com/photo-1492496913980-501348b61469?auto=format&fit=crop&w=700&q=80" alt="Aperçu histoire" />
+                  <img
+                    src={preview.storyImage}
+                    alt="Aperçu histoire"
+                    onClick={(e) => { e.stopPropagation(); setSelected({ id: 'storyImage', label: 'Image de l’histoire', type: 'image' }) }}
+                  />
                   <div>
                     <span className="mini-eyebrow">— NOTRE HISTOIRE</span>
                     <h3>{preview.storyTitle}</h3>
@@ -423,7 +433,15 @@ export default function AdminEditor({
                 ) : selected.type === 'image' ? (
                   <>
                     <div className="field">
-                      <label>{selected.id === 'founderPhoto' ? 'Photo de la fondatrice' : 'Image de la mission'}</label>
+                      <label>
+                        {selected.id === 'heroImage'
+                          ? 'Image du hero'
+                          : selected.id === 'storyImage'
+                            ? 'Image de l’histoire'
+                            : selected.id === 'founderPhoto'
+                              ? 'Photo de la fondatrice'
+                              : 'Image de la mission'}
+                      </label>
                       <div className="image-field">
                         <img src={content[selected.id as ImageFieldId]} alt="" />
                         <input
@@ -441,7 +459,29 @@ export default function AdminEditor({
                         </button>
                       </div>
                     </div>
-                    {selected.id === 'founderPhoto' ? (
+                    {selected.id === 'heroImage' ? (
+                      <>
+                        <div className="field">
+                          <label>Titre principal</label>
+                          <input value={content.heroTitle} onChange={(e) => updateText('heroTitle', e.target.value)} />
+                        </div>
+                        <div className="field">
+                          <label>Texte du hero</label>
+                          <textarea value={content.heroText} onChange={(e) => updateText('heroText', e.target.value)} rows={4} />
+                        </div>
+                      </>
+                    ) : selected.id === 'storyImage' ? (
+                      <>
+                        <div className="field">
+                          <label>Titre de l’histoire</label>
+                          <input value={content.storyTitle} onChange={(e) => updateText('storyTitle', e.target.value)} />
+                        </div>
+                        <div className="field">
+                          <label>Texte de l’histoire</label>
+                          <textarea value={content.storyText} onChange={(e) => updateText('storyText', e.target.value)} rows={4} />
+                        </div>
+                      </>
+                    ) : selected.id === 'founderPhoto' ? (
                       <>
                         <div className="field">
                           <label>Texte de la fondatrice</label>
