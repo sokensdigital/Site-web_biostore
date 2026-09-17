@@ -1,10 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Menu, MessageCircle, X } from 'lucide-react'
 
 export default function MobileNav({ whatsappNumber }: { whatsappNumber: string }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const prefix = pathname === '/' ? '' : '/'
   const whatsappLink = (message: string) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
 
   return (
@@ -13,10 +17,10 @@ export default function MobileNav({ whatsappNumber }: { whatsappNumber: string }
         {menuOpen ? <X /> : <Menu />}
       </button>
       <nav className={`main-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Navigation principale">
-        <a href="#accueil" onClick={() => setMenuOpen(false)}>Accueil</a>
-        <a href="#produits" onClick={() => setMenuOpen(false)}>Nos produits</a>
-        <a href="#histoire" onClick={() => setMenuOpen(false)}>Notre histoire</a>
-        <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+        <Link href={`${prefix}#accueil`} onClick={() => setMenuOpen(false)}>Accueil</Link>
+        <Link href={`${prefix}#produits`} onClick={() => setMenuOpen(false)}>Nos produits</Link>
+        <Link href={`${prefix}#histoire`} onClick={() => setMenuOpen(false)}>Notre histoire</Link>
+        <Link href={`${prefix}#contact`} onClick={() => setMenuOpen(false)}>Contact</Link>
       </nav>
       <a className="button button-primary nav-cta" href={whatsappLink('Bonjour Biostore, je souhaite avoir des informations sur vos produits.')} target="_blank" rel="noreferrer">
         <MessageCircle size={17} /> Se faire livrer

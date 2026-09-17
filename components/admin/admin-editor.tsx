@@ -8,7 +8,6 @@ import {
   FileText,
   Image as ImageIcon,
   LayoutDashboard,
-  Leaf,
   LogOut,
   Menu,
   Pencil,
@@ -18,11 +17,43 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react'
-import type { Product, SiteContent } from '@/lib/content'
-import { logout, updateContent, updateProduct, uploadProductImage } from '@/app/admin/actions'
+import type { PointOfSale, Product, SiteContent } from '@/lib/content'
+import {
+  logout,
+  updateContent,
+  updatePointOfSale,
+  updateProduct,
+  uploadContentImage,
+  uploadOutletImage,
+  uploadProductImage,
+} from '@/app/admin/actions'
 
-type TextFieldId = 'heroTitle' | 'heroText' | 'storyTitle' | 'storyText' | 'productsTitle' | 'ctaTitle' | 'whatsappNumber'
-type Selection = { id: string; label: string; type: 'text' | 'product' }
+type TextFieldId =
+  | 'heroTitle'
+  | 'heroText'
+  | 'storyTitle'
+  | 'storyText'
+  | 'productsTitle'
+  | 'ctaTitle'
+  | 'whatsappNumber'
+  | 'aboutHeroTitle'
+  | 'aboutHeroText'
+  | 'founderQuote'
+  | 'founderText'
+  | 'founderName'
+  | 'founderRole'
+  | 'missionTitle'
+  | 'missionText1'
+  | 'missionText2'
+  | 'missionQuote'
+  | 'commitment1Title'
+  | 'commitment1Text'
+  | 'commitment2Title'
+  | 'commitment2Text'
+  | 'commitment3Title'
+  | 'commitment3Text'
+type ImageFieldId = 'founderPhoto' | 'missionImage'
+type Selection = { id: string; label: string; type: 'text' | 'product' | 'outlet' | 'image' }
 
 const productFieldLabels: Record<keyof Omit<Product, 'id' | 'position' | 'createdAt' | 'updatedAt'>, string> = {
   name: 'Nom du produit',
@@ -37,9 +68,18 @@ const productFieldLabels: Record<keyof Omit<Product, 'id' | 'position' | 'create
 
 const productFieldOrder = ['name', 'category', 'description', 'price', 'format', 'ingredients', 'conservation'] as const
 
-export default function AdminEditor({ initialContent, initialProducts }: { initialContent: SiteContent; initialProducts: Product[] }) {
+export default function AdminEditor({
+  initialContent,
+  initialProducts,
+  initialOutlets,
+}: {
+  initialContent: SiteContent
+  initialProducts: Product[]
+  initialOutlets: PointOfSale[]
+}) {
   const [content, setContent] = useState(initialContent)
   const [products, setProducts] = useState(initialProducts)
+  const [outlets, setOutlets] = useState(initialOutlets)
   const [selected, setSelected] = useState<Selection>({ id: 'heroTitle', label: 'Titre principal', type: 'text' })
   const [saved, setSaved] = useState(true)
   const [menu, setMenu] = useState(false)
@@ -47,8 +87,14 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const selectedProduct = selected.type === 'product' ? products.find((p) => p.id === selected.id) ?? null : null
+  const selectedOutlet = selected.type === 'outlet' ? outlets.find((o) => o.id === selected.id) ?? null : null
 
   function updateText(key: TextFieldId, value: string) {
+    setContent((prev) => ({ ...prev, [key]: value }))
+    setSaved(false)
+  }
+
+  function updateImage(key: ImageFieldId, value: string) {
     setContent((prev) => ({ ...prev, [key]: value }))
     setSaved(false)
   }
@@ -59,11 +105,31 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
     setSaved(false)
   }
 
+  function updateSelectedOutlet(key: 'name' | 'city' | 'image' | 'imageFit', value: string) {
+    if (!selectedOutlet) return
+    setOutlets((prev) => prev.map((o) => (o.id === selectedOutlet.id ? { ...o, [key]: value } : o)))
+    setSaved(false)
+  }
+
   async function handleImageReplace(file: File) {
     const formData = new FormData()
     formData.append('file', file)
     const url = await uploadProductImage(formData)
     updateSelectedProduct('image', url)
+  }
+
+  async function handleOutletImageReplace(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const url = await uploadOutletImage(formData)
+    updateSelectedOutlet('image', url)
+  }
+
+  async function handleContentImageReplace(key: ImageFieldId, file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const url = await uploadContentImage(formData)
+    updateImage(key, url)
   }
 
   function save() {
@@ -76,6 +142,24 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
         productsTitle: content.productsTitle,
         ctaTitle: content.ctaTitle,
         whatsappNumber: content.whatsappNumber,
+        aboutHeroTitle: content.aboutHeroTitle,
+        aboutHeroText: content.aboutHeroText,
+        founderPhoto: content.founderPhoto,
+        founderQuote: content.founderQuote,
+        founderText: content.founderText,
+        founderName: content.founderName,
+        founderRole: content.founderRole,
+        missionTitle: content.missionTitle,
+        missionText1: content.missionText1,
+        missionText2: content.missionText2,
+        missionImage: content.missionImage,
+        missionQuote: content.missionQuote,
+        commitment1Title: content.commitment1Title,
+        commitment1Text: content.commitment1Text,
+        commitment2Title: content.commitment2Title,
+        commitment2Text: content.commitment2Text,
+        commitment3Title: content.commitment3Title,
+        commitment3Text: content.commitment3Text,
       })
       await Promise.all(
         products.map((product) =>
@@ -91,6 +175,16 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
           })
         )
       )
+      await Promise.all(
+        outlets.map((outlet) =>
+          updatePointOfSale(outlet.id, {
+            name: outlet.name,
+            city: outlet.city,
+            image: outlet.image,
+            imageFit: outlet.imageFit,
+          })
+        )
+      )
       setSaved(true)
     })
   }
@@ -98,6 +192,7 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
   function reset() {
     setContent(initialContent)
     setProducts(initialProducts)
+    setOutlets(initialOutlets)
     setSaved(false)
   }
 
@@ -107,7 +202,7 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
     <main className="admin-shell">
       <aside className={`admin-sidebar ${menu ? 'open' : ''}`}>
         <div className="admin-logo">
-          <span className="brand-mark"><Leaf size={17} /></span> bio<span>store</span>
+          <img src="/logo_biostore-removebg-preview.png" alt="Biostore" className="admin-logo-img" />
         </div>
         <div className="workspace-label">Studio de contenu</div>
         <nav className="admin-nav">
@@ -152,7 +247,7 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
               </div>
               <div className="mini-site">
                 <div className="mini-nav">
-                  <span className="mini-brand"><Leaf size={13} /> bio<span>store</span></span>
+                  <span className="mini-brand"><img src="/logo_biostore-removebg-preview.png" alt="Biostore" /></span>
                   <span>Accueil　 Nos produits　 Notre histoire　 Contact</span>
                   <b>Se faire livrer</b>
                 </div>
@@ -197,6 +292,45 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
                     ))}
                   </div>
                 </div>
+                <div className="mini-pos">
+                  <div className="mini-section-heading"><span className="mini-eyebrow">— OÙ NOUS TROUVER</span><h3>Points de vente</h3></div>
+                  <div className="mini-pos-grid">
+                    {outlets.map((outlet) => (
+                      <article className="mini-pos-item editable" key={outlet.id} onClick={() => setSelected({ id: outlet.id, label: outlet.name, type: 'outlet' })}>
+                        <img src={outlet.image} alt={outlet.name} />
+                        <strong>{outlet.name}</strong>
+                        <Pencil size={13} />
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div className="mini-about-heading editable" onClick={() => setSelected({ id: 'about-hero', label: 'Page à propos — introduction', type: 'text' })}>
+                  <span className="mini-eyebrow">— PAGE À PROPOS</span>
+                  <h3>{preview.aboutHeroTitle}</h3>
+                  <p>{preview.aboutHeroText}</p>
+                </div>
+                <div className="mini-founder editable" onClick={() => setSelected({ id: 'founderPhoto', label: 'Photo de la fondatrice', type: 'image' })}>
+                  <img src={preview.founderPhoto} alt="Aperçu fondatrice" />
+                  <div>
+                    <span className="mini-eyebrow">— LE MOT DE LA FONDATRICE</span>
+                    <p onClick={(e) => { e.stopPropagation(); setSelected({ id: 'founderQuote', label: 'Citation de la fondatrice', type: 'text' }) }}>“{preview.founderQuote}”</p>
+                    <strong onClick={(e) => { e.stopPropagation(); setSelected({ id: 'founderName', label: 'Nom de la fondatrice', type: 'text' }) }}>{preview.founderName}</strong>
+                  </div>
+                  <Pencil size={13} />
+                </div>
+                <div className="mini-mission editable" onClick={() => setSelected({ id: 'missionImage', label: 'Image de la mission', type: 'image' })}>
+                  <div>
+                    <span className="mini-eyebrow">— NOTRE MISSION</span>
+                    <h3 onClick={(e) => { e.stopPropagation(); setSelected({ id: 'missionTitle', label: 'Titre de la mission', type: 'text' }) }}>{preview.missionTitle}</h3>
+                    <p onClick={(e) => { e.stopPropagation(); setSelected({ id: 'missionText1', label: 'Texte de la mission (1)', type: 'text' }) }}>{preview.missionText1}</p>
+                  </div>
+                  <img src={preview.missionImage} alt="Aperçu mission" />
+                </div>
+                <div className="mini-values">
+                  <span className="editable" onClick={() => setSelected({ id: 'commitment1Title', label: 'Engagement 1', type: 'text' })}>✦<strong>{preview.commitment1Title}</strong></span>
+                  <span className="editable" onClick={() => setSelected({ id: 'commitment2Title', label: 'Engagement 2', type: 'text' })}>◌<strong>{preview.commitment2Title}</strong></span>
+                  <span className="editable" onClick={() => setSelected({ id: 'commitment3Title', label: 'Engagement 3', type: 'text' })}>✧<strong>{preview.commitment3Title}</strong></span>
+                </div>
                 <div className="mini-cta editable" onClick={() => setSelected({ id: 'ctaTitle', label: 'Appel à l’action', type: 'text' })}>
                   <div>
                     <span>— PARLONS DE VOS ENVIES</span>
@@ -205,7 +339,7 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
                   <b>Écrire sur WhatsApp　→</b>
                 </div>
                 <div className="mini-footer">
-                  <span className="mini-brand"><Leaf size={13} /> bio<span>store</span></span>
+                  <span className="mini-brand"><img src="/logo_biostore-removebg-preview.png" alt="Biostore" /></span>
                   <small>Le naturel, avec intention.</small>
                   <small>© 2024 Biostore</small>
                 </div>
@@ -245,6 +379,121 @@ export default function AdminEditor({ initialContent, initialProducts }: { initi
                       </div>
                     ))}
                   </>
+                ) : selected.type === 'outlet' && selectedOutlet ? (
+                  <>
+                    <div className="field">
+                      <label>Image / logo</label>
+                      <div className="image-field">
+                        <img src={selectedOutlet.image} alt="" />
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleOutletImageReplace(file)
+                          }}
+                        />
+                        <button type="button" onClick={() => fileInputRef.current?.click()}>
+                          <ImageIcon size={15} /> Remplacer
+                        </button>
+                      </div>
+                    </div>
+                    <div className="field">
+                      <label>Nom de l’enseigne</label>
+                      <input value={selectedOutlet.name} onChange={(e) => updateSelectedOutlet('name', e.target.value)} />
+                    </div>
+                    <div className="field">
+                      <label>Ville</label>
+                      <input value={selectedOutlet.city} onChange={(e) => updateSelectedOutlet('city', e.target.value)} />
+                    </div>
+                    <div className="field">
+                      <label>Type d’image</label>
+                      <select
+                        className="select-field"
+                        value={selectedOutlet.imageFit}
+                        onChange={(e) => updateSelectedOutlet('imageFit', e.target.value)}
+                      >
+                        <option value="contain">Logo (fond couleur)</option>
+                        <option value="cover">Photo (plein cadre)</option>
+                      </select>
+                    </div>
+                  </>
+                ) : selected.type === 'image' ? (
+                  <>
+                    <div className="field">
+                      <label>{selected.id === 'founderPhoto' ? 'Photo de la fondatrice' : 'Image de la mission'}</label>
+                      <div className="image-field">
+                        <img src={content[selected.id as ImageFieldId]} alt="" />
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleContentImageReplace(selected.id as ImageFieldId, file)
+                          }}
+                        />
+                        <button type="button" onClick={() => fileInputRef.current?.click()}>
+                          <ImageIcon size={15} /> Remplacer
+                        </button>
+                      </div>
+                    </div>
+                    {selected.id === 'founderPhoto' ? (
+                      <>
+                        <div className="field">
+                          <label>Texte de la fondatrice</label>
+                          <textarea value={content.founderText} onChange={(e) => updateText('founderText', e.target.value)} rows={5} />
+                        </div>
+                        <div className="field">
+                          <label>Fonction</label>
+                          <input value={content.founderRole} onChange={(e) => updateText('founderRole', e.target.value)} />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="field">
+                          <label>Texte de la mission (2)</label>
+                          <textarea value={content.missionText2} onChange={(e) => updateText('missionText2', e.target.value)} rows={4} />
+                        </div>
+                        <div className="field">
+                          <label>Citation encadrée</label>
+                          <textarea value={content.missionQuote} onChange={(e) => updateText('missionQuote', e.target.value)} rows={3} />
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : selected.id === 'about-hero' ? (
+                  <>
+                    <div className="field">
+                      <label>Titre de la page à propos</label>
+                      <input value={content.aboutHeroTitle} onChange={(e) => updateText('aboutHeroTitle', e.target.value)} />
+                    </div>
+                    <div className="field">
+                      <label>Texte d’introduction</label>
+                      <textarea value={content.aboutHeroText} onChange={(e) => updateText('aboutHeroText', e.target.value)} rows={5} />
+                    </div>
+                  </>
+                ) : selected.id.startsWith('commitment') ? (
+                  (() => {
+                    const n = selected.id.charAt('commitment'.length)
+                    const titleKey = `commitment${n}Title` as TextFieldId
+                    const textKey = `commitment${n}Text` as TextFieldId
+                    return (
+                      <>
+                        <div className="field">
+                          <label>Titre de l’engagement</label>
+                          <input value={content[titleKey]} onChange={(e) => updateText(titleKey, e.target.value)} />
+                        </div>
+                        <div className="field">
+                          <label>Texte de l’engagement</label>
+                          <textarea value={content[textKey]} onChange={(e) => updateText(textKey, e.target.value)} rows={4} />
+                        </div>
+                      </>
+                    )
+                  })()
                 ) : (
                   <>
                     <div className="field">

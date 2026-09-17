@@ -76,6 +76,18 @@ async function main() {
     const existing = await prisma.product.findFirst({ where: { name: product.name } })
     if (!existing) await prisma.product.create({ data: product })
   }
+
+  const outlets = [
+    { name: 'MBOLO', city: 'Libreville, Gabon', image: '/points-of-sale/mbolo.jpg', imageFit: 'cover', position: 0 },
+    { name: 'SUPER CKDO', city: 'Libreville, Gabon', image: '/points-of-sale/super-ckdo.png', imageFit: 'contain', position: 1 },
+    { name: 'PRIX IMPORT', city: 'Libreville, Gabon', image: '/points-of-sale/prix-import.png', imageFit: 'contain', position: 2 },
+    { name: 'Geant CKDO', city: 'Libreville, Gabon', image: '/points-of-sale/geant-ckdo.png', imageFit: 'contain', position: 3 },
+  ]
+
+  for (const outlet of outlets) {
+    const existing = await prisma.pointOfSale.findFirst({ where: { name: outlet.name } })
+    if (!existing) await prisma.pointOfSale.create({ data: outlet })
+  }
 }
 
 main()

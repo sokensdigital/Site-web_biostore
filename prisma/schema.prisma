@@ -19,7 +19,30 @@ model SiteContent {
   productsTitle  String
   ctaTitle       String
   whatsappNumber String
-  updatedAt      DateTime @updatedAt
+
+  aboutHeroTitle String @default("Le naturel, avec intention.")
+  aboutHeroText  String @default("Biostore est née d'une conviction simple : bien manger ne devrait jamais être un compromis. Depuis 2021, nous transformons des produits bruts gabonais en essentiels du quotidien, sans superflu et avec exigence.")
+
+  founderPhoto  String @default("https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=85")
+  founderQuote  String @default("Biostore est parti d'un constat tout simple : dans nos marchés, il était devenu difficile de trouver des produits vraiment naturels, sans additifs ni promesses vides. J'ai voulu créer une marque honnête, qui transforme avec soin ce que notre terre gabonaise nous offre déjà généreusement.")
+  founderText   String @default("Chaque produit qui sort de notre atelier porte cette exigence : peu d'ingrédients, mais les bons, et un respect total du consommateur. Ce n'est pas seulement une entreprise que nous construisons, c'est une manière de redonner confiance dans ce que l'on mange.")
+  founderName   String @default("Aïcha Ndong")
+  founderRole   String @default("Fondatrice & directrice, Biostore")
+
+  missionTitle String @default("Rendre le naturel accessible.")
+  missionText1 String @default("Nous croyons qu'une alimentation saine ne doit pas être un luxe réservé à quelques-uns. Notre mission est de rendre les produits naturels gabonais accessibles, abordables et présents dans chaque foyer, tout en soutenant une chaîne de production locale, courte et respectueuse.")
+  missionText2 String @default("Pas d'additifs, pas de raccourcis : chaque produit qui porte notre nom est préparé avec la même rigueur que le tout premier pot de miel vendu en 2021.")
+  missionImage String @default("https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1100&q=85")
+  missionQuote String @default("Le naturel n'est pas une tendance. C'est un engagement de tous les jours.")
+
+  commitment1Title String @default("Des filières locales")
+  commitment1Text  String @default("Nous travaillons main dans la main avec des producteurs gabonais pour valoriser des matières premières locales.")
+  commitment2Title String @default("Une transformation soignée")
+  commitment2Text  String @default("Chaque lot est préparé en petite quantité, dans le respect des bonnes pratiques d'hygiène et de traçabilité.")
+  commitment3Title String @default("Un impact communautaire")
+  commitment3Text  String @default("Une partie de notre activité soutient la formation de jeunes transformateurs locaux, pour faire grandir le savoir-faire.")
+
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -37,4 +60,29 @@ model Product {
   updatedAt    DateTime @updatedAt
 
   @@index([position])
+}
+
+model PointOfSale {
+  id        String   @id @default(cuid())
+  name      String
+  city      String
+  image     String
+  imageFit  String   @default("contain")
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  city      String
+  quote     String
+  rating    Int      @default(5)
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([approved])
 }

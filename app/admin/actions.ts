@@ -36,6 +36,24 @@ const contentFields = [
   'productsTitle',
   'ctaTitle',
   'whatsappNumber',
+  'aboutHeroTitle',
+  'aboutHeroText',
+  'founderPhoto',
+  'founderQuote',
+  'founderText',
+  'founderName',
+  'founderRole',
+  'missionTitle',
+  'missionText1',
+  'missionText2',
+  'missionImage',
+  'missionQuote',
+  'commitment1Title',
+  'commitment1Text',
+  'commitment2Title',
+  'commitment2Text',
+  'commitment3Title',
+  'commitment3Text',
 ] as const
 
 export async function updateContent(data: Partial<Record<(typeof contentFields)[number], string>>) {
@@ -45,6 +63,7 @@ export async function updateContent(data: Partial<Record<(typeof contentFields)[
   await prisma.siteContent.update({ where: { id: 1 }, data: update })
   revalidatePath('/')
   revalidatePath('/admin')
+  revalidatePath('/catalogue')
 }
 
 type ProductInput = {
@@ -63,23 +82,48 @@ export async function createProduct(data: ProductInput) {
   await prisma.product.create({ data: { ...data, position: (last?.position ?? -1) + 1 } })
   revalidatePath('/')
   revalidatePath('/admin')
+  revalidatePath('/catalogue')
 }
 
 export async function updateProduct(id: string, data: Partial<ProductInput>) {
   await prisma.product.update({ where: { id }, data })
   revalidatePath('/')
   revalidatePath('/admin')
+  revalidatePath('/catalogue')
 }
 
 export async function deleteProduct(id: string) {
   await prisma.product.delete({ where: { id } })
   revalidatePath('/')
   revalidatePath('/admin')
+  revalidatePath('/catalogue')
 }
 
 export async function uploadProductImage(formData: FormData) {
   const file = formData.get('file')
   if (!(file instanceof File)) throw new Error('Aucun fichier reçu')
   const blob = await put(`products/${Date.now()}-${file.name}`, file, { access: 'public' })
+  return blob.url
+}
+
+type PointOfSaleInput = { name: string; city: string; image: string; imageFit: string }
+
+export async function updatePointOfSale(id: string, data: Partial<PointOfSaleInput>) {
+  await prisma.pointOfSale.update({ where: { id }, data })
+  revalidatePath('/')
+  revalidatePath('/admin')
+}
+
+export async function uploadOutletImage(formData: FormData) {
+  const file = formData.get('file')
+  if (!(file instanceof File)) throw new Error('Aucun fichier reçu')
+  const blob = await put(`points-of-sale/${Date.now()}-${file.name}`, file, { access: 'public' })
+  return blob.url
+}
+
+export async function uploadContentImage(formData: FormData) {
+  const file = formData.get('file')
+  if (!(file instanceof File)) throw new Error('Aucun fichier reçu')
+  const blob = await put(`content/${Date.now()}-${file.name}`, file, { access: 'public' })
   return blob.url
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { ArrowRight, Leaf, LockKeyhole, Mail } from 'lucide-react'
+import { ArrowRight, LockKeyhole, Mail } from 'lucide-react'
 import { login, type LoginState } from '../actions'
 
 const initialState: LoginState = {}
@@ -13,7 +13,7 @@ export default function AdminLogin() {
     <main className="login-page">
       <div className="login-visual">
         <div className="login-brand">
-          <span className="brand-mark"><Leaf size={18} /></span> bio<span>store</span>
+          <img src="/logo_biostore-removebg-preview.png" alt="Biostore" className="brand-logo" />
         </div>
         <div>
           <span className="eyebrow light"><span className="eyebrow-line" /> Espace d’administration</span>

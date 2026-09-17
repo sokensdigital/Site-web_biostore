@@ -1,3 +1,3 @@
-import type { Product, SiteContent } from '@prisma/client'
+import type { Product, SiteContent, PointOfSale } from '@prisma/client'
 
-export type { Product, SiteContent }
+export type { Product, SiteContent, PointOfSale }
