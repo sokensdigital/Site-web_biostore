@@ -11,16 +11,25 @@ import {
   LogOut,
   Menu,
   Pencil,
+  Plus,
   RotateCcw,
   Save,
   Settings,
   SlidersHorizontal,
+  Trash2,
   X,
 } from 'lucide-react'
-import type { PointOfSale, Product, SiteContent } from '@/lib/content'
+import type { HeroImage, PointOfSale, Product, SiteContent } from '@/lib/content'
 import {
+  addHeroImage,
+  createPointOfSale,
+  createProduct,
+  deleteHeroImage,
+  deletePointOfSale,
+  deleteProduct,
   logout,
   updateContent,
+  updateHeroImage,
   updatePointOfSale,
   updateProduct,
   uploadContentImage,
@@ -52,8 +61,11 @@ type TextFieldId =
   | 'commitment2Text'
   | 'commitment3Title'
   | 'commitment3Text'
-type ImageFieldId = 'heroImage' | 'storyImage' | 'founderPhoto' | 'missionImage'
-type Selection = { id: string; label: string; type: 'text' | 'product' | 'outlet' | 'image' }
+  | 'benefitsTitle'
+  | 'benefitsText'
+  | 'benefitsCaption'
+type ImageFieldId = 'heroImage' | 'storyImage' | 'founderPhoto' | 'missionImage' | 'benefitsImage'
+type Selection = { id: string; label: string; type: 'text' | 'product' | 'outlet' | 'image' | 'hero-image' }
 
 const productFieldLabels: Record<keyof Omit<Product, 'id' | 'position' | 'createdAt' | 'updatedAt'>, string> = {
   name: 'Nom du produit',
@@ -72,22 +84,27 @@ export default function AdminEditor({
   initialContent,
   initialProducts,
   initialOutlets,
+  initialHeroImages,
 }: {
   initialContent: SiteContent
   initialProducts: Product[]
   initialOutlets: PointOfSale[]
+  initialHeroImages: HeroImage[]
 }) {
   const [content, setContent] = useState(initialContent)
   const [products, setProducts] = useState(initialProducts)
   const [outlets, setOutlets] = useState(initialOutlets)
+  const [heroImages, setHeroImages] = useState(initialHeroImages)
   const [selected, setSelected] = useState<Selection>({ id: 'heroTitle', label: 'Titre principal', type: 'text' })
   const [saved, setSaved] = useState(true)
   const [menu, setMenu] = useState(false)
   const [pending, startTransition] = useTransition()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const heroImageInputRef = useRef<HTMLInputElement>(null)
 
   const selectedProduct = selected.type === 'product' ? products.find((p) => p.id === selected.id) ?? null : null
   const selectedOutlet = selected.type === 'outlet' ? outlets.find((o) => o.id === selected.id) ?? null : null
+  const selectedHeroImage = selected.type === 'hero-image' ? heroImages.find((h) => h.id === selected.id) ?? null : null
 
   function updateText(key: TextFieldId, value: string) {
     setContent((prev) => ({ ...prev, [key]: value }))
@@ -132,6 +149,87 @@ export default function AdminEditor({
     updateImage(key, url)
   }
 
+  const [busy, setBusy] = useState(false)
+
+  async function addProduct() {
+    setBusy(true)
+    const product = await createProduct({
+      name: 'Nouveau produit',
+      category: 'Catégorie',
+      description: 'Description du produit.',
+      price: '0 FCFA',
+      format: '',
+      image: '/placeholder.jpg',
+      ingredients: '',
+      conservation: '',
+    })
+    setProducts((prev) => [...prev, product])
+    setSelected({ id: product.id, label: product.name, type: 'product' })
+    setBusy(false)
+  }
+
+  async function removeSelectedProduct() {
+    if (!selectedProduct) return
+    setBusy(true)
+    await deleteProduct(selectedProduct.id)
+    setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id))
+    setSelected({ id: 'heroTitle', label: 'Titre principal', type: 'text' })
+    setBusy(false)
+  }
+
+  async function addOutlet() {
+    setBusy(true)
+    const outlet = await createPointOfSale({
+      name: 'Nouveau point de vente',
+      city: 'Libreville, Gabon',
+      image: '/placeholder.jpg',
+      imageFit: 'contain',
+    })
+    setOutlets((prev) => [...prev, outlet])
+    setSelected({ id: outlet.id, label: outlet.name, type: 'outlet' })
+    setBusy(false)
+  }
+
+  async function removeSelectedOutlet() {
+    if (!selectedOutlet) return
+    setBusy(true)
+    await deletePointOfSale(selectedOutlet.id)
+    setOutlets((prev) => prev.filter((o) => o.id !== selectedOutlet.id))
+    setSelected({ id: 'heroTitle', label: 'Titre principal', type: 'text' })
+    setBusy(false)
+  }
+
+  async function handleAddHeroImage(file: File) {
+    setBusy(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    const url = await uploadContentImage(formData)
+    const heroImage = await addHeroImage(url)
+    setHeroImages((prev) => [...prev, heroImage])
+    setSelected({ id: heroImage.id, label: 'Image secondaire du hero', type: 'hero-image' })
+    setBusy(false)
+  }
+
+  async function handleReplaceHeroImage(file: File) {
+    if (!selectedHeroImage) return
+    setBusy(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    const url = await uploadContentImage(formData)
+    const updated = await updateHeroImage(selectedHeroImage.id, url)
+    setHeroImages((prev) => prev.map((h) => (h.id === updated.id ? updated : h)))
+    setBusy(false)
+  }
+
+  async function removeSelectedHeroImage() {
+    if (!selectedHeroImage) return
+    setBusy(true)
+    await deleteHeroImage(selectedHeroImage.id)
+    setHeroImages((prev) => prev.filter((h) => h.id !== selectedHeroImage.id))
+    setSelected({ id: 'heroTitle', label: 'Titre principal', type: 'text' })
+    setBusy(false)
+  }
+
   function save() {
     startTransition(async () => {
       await updateContent({
@@ -162,6 +260,10 @@ export default function AdminEditor({
         commitment2Text: content.commitment2Text,
         commitment3Title: content.commitment3Title,
         commitment3Text: content.commitment3Text,
+        benefitsTitle: content.benefitsTitle,
+        benefitsText: content.benefitsText,
+        benefitsImage: content.benefitsImage,
+        benefitsCaption: content.benefitsCaption,
       })
       await Promise.all(
         products.map((product) =>
@@ -195,6 +297,7 @@ export default function AdminEditor({
     setContent(initialContent)
     setProducts(initialProducts)
     setOutlets(initialOutlets)
+    setHeroImages(initialHeroImages)
     setSaved(false)
   }
 
@@ -266,6 +369,34 @@ export default function AdminEditor({
                     onClick={(e) => { e.stopPropagation(); setSelected({ id: 'heroImage', label: 'Image du hero', type: 'image' }) }}
                   />
                 </div>
+                <div className="mini-hero-secondary" onClick={(e) => e.stopPropagation()}>
+                  <span className="mini-hero-secondary-label">Images secondaires (diaporama)</span>
+                  <div className="mini-hero-secondary-row">
+                    {heroImages.map((hi) => (
+                      <button
+                        type="button"
+                        key={hi.id}
+                        className="mini-hero-thumb"
+                        onClick={() => setSelected({ id: hi.id, label: 'Image secondaire du hero', type: 'hero-image' })}
+                      >
+                        <img src={hi.image} alt="Image secondaire" />
+                      </button>
+                    ))}
+                    <input
+                      ref={heroImageInputRef}
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleAddHeroImage(file)
+                      }}
+                    />
+                    <button type="button" className="mini-hero-thumb mini-hero-thumb-add" onClick={() => heroImageInputRef.current?.click()} disabled={busy}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
                 <div className="mini-strip">DU CHAMP À VOTRE TABLE　 •　 QUALITÉ LOCALE　 •　 LIVRAISON DISPONIBLE</div>
                 <div className="mini-story editable" onClick={() => setSelected({ id: 'storyTitle', label: 'Titre histoire', type: 'text' })}>
                   <img
@@ -286,9 +417,14 @@ export default function AdminEditor({
                   <span>✧<strong>Fait avec soin</strong></span>
                 </div>
                 <div className="mini-products">
-                  <div className="mini-section-heading editable" onClick={() => setSelected({ id: 'productsTitle', label: 'Titre produits', type: 'text' })}>
-                    <span className="mini-eyebrow">— LA SÉLECTION BIOSTORE</span>
-                    <h3>{preview.productsTitle}</h3>
+                  <div className="mini-section-heading mini-section-heading-row">
+                    <div className="editable" onClick={() => setSelected({ id: 'productsTitle', label: 'Titre produits', type: 'text' })}>
+                      <span className="mini-eyebrow">— LA SÉLECTION BIOSTORE</span>
+                      <h3>{preview.productsTitle}</h3>
+                    </div>
+                    <button type="button" className="mini-add-button" onClick={addProduct} disabled={busy}>
+                      <Plus size={13} /> Ajouter
+                    </button>
                   </div>
                   <div className="mini-product-grid">
                     {products.map((product) => (
@@ -303,7 +439,12 @@ export default function AdminEditor({
                   </div>
                 </div>
                 <div className="mini-pos">
-                  <div className="mini-section-heading"><span className="mini-eyebrow">— OÙ NOUS TROUVER</span><h3>Points de vente</h3></div>
+                  <div className="mini-section-heading mini-section-heading-row">
+                    <div><span className="mini-eyebrow">— OÙ NOUS TROUVER</span><h3>Points de vente</h3></div>
+                    <button type="button" className="mini-add-button" onClick={addOutlet} disabled={busy}>
+                      <Plus size={13} /> Ajouter
+                    </button>
+                  </div>
                   <div className="mini-pos-grid">
                     {outlets.map((outlet) => (
                       <article className="mini-pos-item editable" key={outlet.id} onClick={() => setSelected({ id: outlet.id, label: outlet.name, type: 'outlet' })}>
@@ -340,6 +481,14 @@ export default function AdminEditor({
                   <span className="editable" onClick={() => setSelected({ id: 'commitment1Title', label: 'Engagement 1', type: 'text' })}>✦<strong>{preview.commitment1Title}</strong></span>
                   <span className="editable" onClick={() => setSelected({ id: 'commitment2Title', label: 'Engagement 2', type: 'text' })}>◌<strong>{preview.commitment2Title}</strong></span>
                   <span className="editable" onClick={() => setSelected({ id: 'commitment3Title', label: 'Engagement 3', type: 'text' })}>✧<strong>{preview.commitment3Title}</strong></span>
+                </div>
+                <div className="mini-benefits editable" onClick={() => setSelected({ id: 'benefitsImage', label: 'Image — Du bon, sans compromis', type: 'image' })}>
+                  <div>
+                    <span className="mini-eyebrow">— DU BON, SANS COMPROMIS</span>
+                    <h3 onClick={(e) => { e.stopPropagation(); setSelected({ id: 'benefitsTitle', label: 'Titre — Du bon, sans compromis', type: 'text' }) }}>{preview.benefitsTitle}</h3>
+                    <p onClick={(e) => { e.stopPropagation(); setSelected({ id: 'benefitsText', label: 'Texte — Du bon, sans compromis', type: 'text' }) }}>{preview.benefitsText}</p>
+                  </div>
+                  <img src={preview.benefitsImage} alt="Aperçu du bon, sans compromis" />
                 </div>
                 <div className="mini-cta editable" onClick={() => setSelected({ id: 'ctaTitle', label: 'Appel à l’action', type: 'text' })}>
                   <div>
@@ -388,6 +537,9 @@ export default function AdminEditor({
                         <input value={selectedProduct[key]} onChange={(e) => updateSelectedProduct(key, e.target.value)} />
                       </div>
                     ))}
+                    <button type="button" className="danger-button" onClick={removeSelectedProduct} disabled={busy}>
+                      <Trash2 size={14} /> Supprimer ce produit
+                    </button>
                   </>
                 ) : selected.type === 'outlet' && selectedOutlet ? (
                   <>
@@ -429,6 +581,35 @@ export default function AdminEditor({
                         <option value="cover">Photo (plein cadre)</option>
                       </select>
                     </div>
+                    <button type="button" className="danger-button" onClick={removeSelectedOutlet} disabled={busy}>
+                      <Trash2 size={14} /> Supprimer ce point de vente
+                    </button>
+                  </>
+                ) : selected.type === 'hero-image' && selectedHeroImage ? (
+                  <>
+                    <div className="field">
+                      <label>Image secondaire du hero</label>
+                      <div className="image-field">
+                        <img src={selectedHeroImage.image} alt="" />
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleReplaceHeroImage(file)
+                          }}
+                        />
+                        <button type="button" onClick={() => fileInputRef.current?.click()}>
+                          <ImageIcon size={15} /> Remplacer
+                        </button>
+                      </div>
+                    </div>
+                    <p className="field-hint">Cette image s’ajoute au diaporama du hero, en plus de l’image principale.</p>
+                    <button type="button" className="danger-button" onClick={removeSelectedHeroImage} disabled={busy}>
+                      <Trash2 size={14} /> Supprimer cette image
+                    </button>
                   </>
                 ) : selected.type === 'image' ? (
                   <>
@@ -440,7 +621,9 @@ export default function AdminEditor({
                             ? 'Image de l’histoire'
                             : selected.id === 'founderPhoto'
                               ? 'Photo de la fondatrice'
-                              : 'Image de la mission'}
+                              : selected.id === 'missionImage'
+                                ? 'Image de la mission'
+                                : 'Image — Du bon, sans compromis'}
                       </label>
                       <div className="image-field">
                         <img src={content[selected.id as ImageFieldId]} alt="" />
@@ -492,7 +675,7 @@ export default function AdminEditor({
                           <input value={content.founderRole} onChange={(e) => updateText('founderRole', e.target.value)} />
                         </div>
                       </>
-                    ) : (
+                    ) : selected.id === 'missionImage' ? (
                       <>
                         <div className="field">
                           <label>Texte de la mission (2)</label>
@@ -501,6 +684,21 @@ export default function AdminEditor({
                         <div className="field">
                           <label>Citation encadrée</label>
                           <textarea value={content.missionQuote} onChange={(e) => updateText('missionQuote', e.target.value)} rows={3} />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="field">
+                          <label>Titre — Du bon, sans compromis</label>
+                          <input value={content.benefitsTitle} onChange={(e) => updateText('benefitsTitle', e.target.value)} />
+                        </div>
+                        <div className="field">
+                          <label>Texte — Du bon, sans compromis</label>
+                          <textarea value={content.benefitsText} onChange={(e) => updateText('benefitsText', e.target.value)} rows={4} />
+                        </div>
+                        <div className="field">
+                          <label>Citation encadrée</label>
+                          <textarea value={content.benefitsCaption} onChange={(e) => updateText('benefitsCaption', e.target.value)} rows={3} />
                         </div>
                       </>
                     )}

@@ -11,6 +11,7 @@ import { prisma, withRetry } from '@/lib/db'
 import { formatPhoneNumber } from '@/lib/utils'
 import MobileNav from '@/components/site/mobile-nav'
 import ProductGallery from '@/components/site/product-gallery'
+import HeroCarousel from '@/components/site/hero-carousel'
 import HeroProductCard from '@/components/site/hero-product-card'
 import ProductDialogProvider from '@/components/site/product-dialog-context'
 import StatsSection from '@/components/site/stats-section'
@@ -27,13 +28,16 @@ const testimonials: { quote: string; name: string; place: string }[] = []
 export const revalidate = 3600
 
 export default async function Page() {
-  const [content, products, outlets] = await withRetry(() =>
+  const [content, products, outlets, heroImages] = await withRetry(() =>
     Promise.all([
       prisma.siteContent.findUniqueOrThrow({ where: { id: 1 } }),
       prisma.product.findMany({ orderBy: { position: 'asc' } }),
       prisma.pointOfSale.findMany({ orderBy: { position: 'asc' } }),
+      prisma.heroImage.findMany({ orderBy: { position: 'asc' } }),
     ])
   )
+
+  const heroCarouselImages = [content.heroImage, ...heroImages.map((h) => h.image)]
 
   const whatsappLink = (message: string) => `https://wa.me/${content.whatsappNumber}?text=${encodeURIComponent(message)}`
   const formattedWhatsappNumber = formatPhoneNumber(content.whatsappNumber)
@@ -69,9 +73,7 @@ export default async function Page() {
             <div className="hero-note"><Check size={16} /> Produits locaux · Transformés avec soin</div>
           </div>
           <div className="hero-visual">
-            <div className="hero-image-wrap">
-              <img src={content.heroImage} alt="Plantes vertes et produits naturels Biostore" />
-            </div>
+            <HeroCarousel images={heroCarouselImages} alt="Plantes vertes et produits naturels Biostore" />
             {featuredProduct && <HeroProductCard product={featuredProduct} />}
             <div className="hero-stamp"><span>100%</span><small>naturel</small></div>
           </div>
@@ -101,7 +103,7 @@ export default async function Page() {
 
       <PointsOfSale outlets={outlets} />
 
-      <section className="benefits-section section"><div className="container benefits-grid"><div className="benefits-copy"><div className="eyebrow"><span className="eyebrow-line" /> Votre tranquillité d’esprit</div><h2>Du bon,<br /><em>sans compromis.</em></h2><p>Parce que bien manger commence par savoir ce que l’on met dans son assiette.</p><div className="benefits-list"><div><PackageCheck size={21} /><span><strong>Des matières premières choisies</strong><small>Auprès de producteurs passionnés et engagés.</small></span></div><div><ShieldCheck size={21} /><span><strong>Une transformation maîtrisée</strong><small>Dans le respect des bonnes pratiques d’hygiène.</small></span></div><div><Truck size={21} /><span><strong>Un service qui vous ressemble</strong><small>Commande simple, conseil humain et livraison fiable.</small></span></div></div></div><div className="benefits-image"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1100&q=85" alt="Légumes frais et panier de produits naturels" /><div className="image-caption"><span className="caption-mark">“</span><p>La qualité n’est pas un détail.<br /><strong>C’est notre point de départ.</strong></p></div></div></div></section>
+      <section className="benefits-section section"><div className="container benefits-grid"><div className="benefits-copy"><div className="eyebrow"><span className="eyebrow-line" /> Votre tranquillité d’esprit</div><h2>{content.benefitsTitle}</h2><p>{content.benefitsText}</p><div className="benefits-list"><div><PackageCheck size={21} /><span><strong>Des matières premières choisies</strong><small>Auprès de producteurs passionnés et engagés.</small></span></div><div><ShieldCheck size={21} /><span><strong>Une transformation maîtrisée</strong><small>Dans le respect des bonnes pratiques d’hygiène.</small></span></div><div><Truck size={21} /><span><strong>Un service qui vous ressemble</strong><small>Commande simple, conseil humain et livraison fiable.</small></span></div></div></div><div className="benefits-image"><img src={content.benefitsImage} alt="Légumes frais et panier de produits naturels" /><div className="image-caption"><span className="caption-mark">“</span><p>{content.benefitsCaption}</p></div></div></div></section>
 
       <section className="testimonials-section section"><div className="container"><div className="section-heading centered"><div className="eyebrow"><span className="eyebrow-line" /> Ils nous font confiance <span className="eyebrow-line" /></div><h2>Des mots qui<br /><em>nous nourrissent.</em></h2></div><TestimonialsMarquee testimonials={testimonials} /><div className="testimonial-cta-wrap"><TestimonialModal /></div></div></section>
 

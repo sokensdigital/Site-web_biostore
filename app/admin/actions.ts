@@ -55,6 +55,10 @@ const contentFields = [
   'commitment2Text',
   'commitment3Title',
   'commitment3Text',
+  'benefitsTitle',
+  'benefitsText',
+  'benefitsImage',
+  'benefitsCaption',
 ] as const
 
 export async function updateContent(data: Partial<Record<(typeof contentFields)[number], string>>) {
@@ -80,10 +84,11 @@ type ProductInput = {
 
 export async function createProduct(data: ProductInput) {
   const last = await prisma.product.findFirst({ orderBy: { position: 'desc' } })
-  await prisma.product.create({ data: { ...data, position: (last?.position ?? -1) + 1 } })
+  const product = await prisma.product.create({ data: { ...data, position: (last?.position ?? -1) + 1 } })
   revalidatePath('/')
   revalidatePath('/admin')
   revalidatePath('/catalogue')
+  return product
 }
 
 export async function updateProduct(id: string, data: Partial<ProductInput>) {
@@ -109,8 +114,22 @@ export async function uploadProductImage(formData: FormData) {
 
 type PointOfSaleInput = { name: string; city: string; image: string; imageFit: string }
 
+export async function createPointOfSale(data: PointOfSaleInput) {
+  const last = await prisma.pointOfSale.findFirst({ orderBy: { position: 'desc' } })
+  const outlet = await prisma.pointOfSale.create({ data: { ...data, position: (last?.position ?? -1) + 1 } })
+  revalidatePath('/')
+  revalidatePath('/admin')
+  return outlet
+}
+
 export async function updatePointOfSale(id: string, data: Partial<PointOfSaleInput>) {
   await prisma.pointOfSale.update({ where: { id }, data })
+  revalidatePath('/')
+  revalidatePath('/admin')
+}
+
+export async function deletePointOfSale(id: string) {
+  await prisma.pointOfSale.delete({ where: { id } })
   revalidatePath('/')
   revalidatePath('/admin')
 }
@@ -127,4 +146,25 @@ export async function uploadContentImage(formData: FormData) {
   if (!(file instanceof File)) throw new Error('Aucun fichier reçu')
   const blob = await put(`content/${Date.now()}-${file.name}`, file, { access: 'public' })
   return blob.url
+}
+
+export async function addHeroImage(image: string) {
+  const last = await prisma.heroImage.findFirst({ orderBy: { position: 'desc' } })
+  const heroImage = await prisma.heroImage.create({ data: { image, position: (last?.position ?? -1) + 1 } })
+  revalidatePath('/')
+  revalidatePath('/admin')
+  return heroImage
+}
+
+export async function updateHeroImage(id: string, image: string) {
+  const heroImage = await prisma.heroImage.update({ where: { id }, data: { image } })
+  revalidatePath('/')
+  revalidatePath('/admin')
+  return heroImage
+}
+
+export async function deleteHeroImage(id: string) {
+  await prisma.heroImage.delete({ where: { id } })
+  revalidatePath('/')
+  revalidatePath('/admin')
 }
