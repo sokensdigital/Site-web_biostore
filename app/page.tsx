@@ -97,7 +97,7 @@ export default async function Page() {
             <div><div className="eyebrow"><span className="eyebrow-line" /> La sélection Biostore</div><h2>{content.productsTitle}</h2></div>
             <p>Des produits authentiques, préparés en petites quantités et pensés pour s’intégrer naturellement dans votre quotidien.</p>
           </div>
-          <ProductGallery products={products} whatsappNumber={content.whatsappNumber} />
+          <ProductGallery products={products.slice(0, 3)} whatsappNumber={content.whatsappNumber} />
         </div>
       </section>
 
