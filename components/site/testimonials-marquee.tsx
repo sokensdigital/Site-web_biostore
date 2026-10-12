@@ -5,6 +5,8 @@ import { Star } from 'lucide-react'
 type Testimonial = { quote: string; name: string; place: string }
 
 export default function TestimonialsMarquee({ testimonials }: { testimonials: Testimonial[] }) {
+  if (testimonials.length === 0) return null
+
   const duration = Math.max(testimonials.length * 7, 20)
 
   function renderTrack(copy: number) {

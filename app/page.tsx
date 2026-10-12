@@ -22,11 +22,7 @@ import TestimonialModal from '@/components/site/testimonial-modal'
 
 const foundingYear = 2021
 
-const testimonials = [
-  { quote: 'Le miel est exceptionnel, on sent vraiment la différence avec les produits industriels.', name: 'Aïcha M.', place: 'Libreville' },
-  { quote: 'J’ai découvert Biostore par une amie et depuis, l’huile de coco ne quitte plus ma cuisine.', name: 'Nadine T.', place: 'Port-Gentil' },
-  { quote: 'Un service chaleureux, des produits propres et une livraison toujours ponctuelle.', name: 'Franck E.', place: 'Franceville' },
-]
+const testimonials: { quote: string; name: string; place: string }[] = []
 
 export const revalidate = 3600
 

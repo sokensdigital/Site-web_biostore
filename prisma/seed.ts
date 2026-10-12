@@ -80,9 +80,7 @@ async function main() {
 
   const outlets = [
     { name: 'MBOLO', city: 'Libreville, Gabon', image: '/points-of-sale/mbolo.jpg', imageFit: 'cover', position: 0 },
-    { name: 'SUPER CKDO', city: 'Libreville, Gabon', image: '/points-of-sale/super-ckdo.png', imageFit: 'contain', position: 1 },
-    { name: 'PRIX IMPORT', city: 'Libreville, Gabon', image: '/points-of-sale/prix-import.png', imageFit: 'contain', position: 2 },
-    { name: 'Geant CKDO', city: 'Libreville, Gabon', image: '/points-of-sale/geant-ckdo.png', imageFit: 'contain', position: 3 },
+    { name: 'PRIX IMPORT', city: 'Libreville, Gabon', image: '/points-of-sale/prix-import.png', imageFit: 'contain', position: 1 },
   ]
 
   for (const outlet of outlets) {
