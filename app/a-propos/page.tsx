@@ -1,10 +1,11 @@
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Leaf, MessageCircle, ShieldCheck, Sprout, Users } from 'lucide-react'
+import { ArrowLeft, Leaf, MessageCircle, ShieldCheck, Sprout, Users } from 'lucide-react'
 import { prisma, withRetry } from '@/lib/db'
 import { formatPhoneNumber } from '@/lib/utils'
 import MobileNav from '@/components/site/mobile-nav'
 import StatsSection from '@/components/site/stats-section'
 import FounderSection from '@/components/site/founder-section'
+import MissionSection from '@/components/site/mission-section'
 
 export const revalidate = 3600
 
@@ -68,24 +69,14 @@ export default async function AboutPage() {
         role={content.founderRole}
       />
 
-      <section className="mission-section section">
-        <div className="container mission-grid">
-          <div className="mission-copy">
-            <div className="eyebrow"><span className="eyebrow-line" /> Notre mission</div>
-            <h2>{content.missionTitle}</h2>
-            <p>{content.missionText1}</p>
-            <p>{content.missionText2}</p>
-            <a className="text-link" href="#produits-cta">Découvrir nos produits <ArrowRight size={16} /></a>
-          </div>
-          <div className="mission-image">
-            <img src={content.missionImage} alt="Ingrédients naturels et produits Biostore" />
-            <div className="image-caption">
-              <span className="caption-mark">“</span>
-              <p>{content.missionQuote}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MissionSection
+        title={content.missionTitle}
+        text1={content.missionText1}
+        text2={content.missionText2}
+        image={content.missionImage}
+        quote={content.missionQuote}
+        ctaHref="#produits-cta"
+      />
 
       <section className="values-section section">
         <div className="container">

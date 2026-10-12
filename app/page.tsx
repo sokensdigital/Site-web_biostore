@@ -18,6 +18,8 @@ import StatsSection from '@/components/site/stats-section'
 import StoryCollage from '@/components/site/story-collage'
 import PointsOfSale from '@/components/site/points-of-sale'
 import ValuesSection from '@/components/site/values-section'
+import FounderSection from '@/components/site/founder-section'
+import MissionSection from '@/components/site/mission-section'
 import TestimonialsMarquee from '@/components/site/testimonials-marquee'
 import TestimonialModal from '@/components/site/testimonial-modal'
 
@@ -89,6 +91,14 @@ export default async function Page() {
         </div>
       </section>
 
+      <FounderSection
+        photo={content.founderPhoto}
+        quote={content.founderQuote}
+        text={content.founderText}
+        name={content.founderName}
+        role={content.founderRole}
+      />
+
       <ValuesSection />
 
       <section className="products-section section" id="produits">
@@ -100,6 +110,15 @@ export default async function Page() {
           <ProductGallery products={products.slice(0, 3)} whatsappNumber={content.whatsappNumber} />
         </div>
       </section>
+
+      <MissionSection
+        title={content.missionTitle}
+        text1={content.missionText1}
+        text2={content.missionText2}
+        image={content.missionImage}
+        quote={content.missionQuote}
+        ctaHref="#produits"
+      />
 
       <PointsOfSale outlets={outlets} />
 
