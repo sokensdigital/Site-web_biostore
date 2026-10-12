@@ -27,7 +27,7 @@ model SiteContent {
   founderPhoto  String @default("https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=85")
   founderQuote  String @default("Biostore est parti d'un constat tout simple : dans nos marchés, il était devenu difficile de trouver des produits vraiment naturels, sans additifs ni promesses vides. J'ai voulu créer une marque honnête, qui transforme avec soin ce que notre terre gabonaise nous offre déjà généreusement.")
   founderText   String @default("Chaque produit qui sort de notre atelier porte cette exigence : peu d'ingrédients, mais les bons, et un respect total du consommateur. Ce n'est pas seulement une entreprise que nous construisons, c'est une manière de redonner confiance dans ce que l'on mange.")
-  founderName   String @default("Ruth Rudy")
+  founderName   String @default("Boussiengui Otoutoumou Rudhy Caprisse")
   founderRole   String @default("Fondatrice & directrice, Biostore")
 
   missionTitle String @default("Rendre le naturel accessible.")
