@@ -73,6 +73,7 @@ export default function CatalogueClient({ products, whatsappNumber }: { products
                 <div>
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
+                  <span className="product-more-link">Voir plus</span>
                 </div>
                 <div className="product-bottom">
                   <strong>{product.price}</strong>
