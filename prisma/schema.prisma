@@ -32,7 +32,7 @@ model SiteContent {
 
   missionTitle String @default("Rendre le naturel accessible.")
   missionText1 String @default("Nous croyons qu'une alimentation saine ne doit pas être un luxe réservé à quelques-uns. Notre mission est de rendre les produits naturels gabonais accessibles, abordables et présents dans chaque foyer, tout en soutenant une chaîne de production locale, courte et respectueuse.")
-  missionText2 String @default("Pas d'additifs, pas de raccourcis : chaque produit qui porte notre nom est préparé avec la même rigueur que le tout premier pot de miel vendu en 2021.")
+  missionText2 String @default("Pas d'additifs, pas de raccourcis : chaque produit qui porte notre nom est préparé avec la même rigueur que le tout premier pot de piment vendu en 2021.")
   missionImage String @default("https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1100&q=85")
   missionQuote String @default("Le naturel n'est pas une tendance. C'est un engagement de tous les jours.")
 
